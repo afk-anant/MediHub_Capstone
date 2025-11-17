@@ -1,1 +1,1 @@
-export const API = "http://localhost:3000";
+export const API = "https://medihub-capstone-web.onrender.com" || "http://localhost:3000";
