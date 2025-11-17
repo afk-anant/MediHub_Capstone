@@ -5,15 +5,6 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-const auth = require("../middleware/authMiddleware");
-
-router.get("/me", auth, async (req, res) => {
-  res.json({
-    message: "Protected user info",
-    user: req.user
-  });
-});
-
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
