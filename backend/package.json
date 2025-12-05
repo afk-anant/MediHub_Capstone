@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "npm install --production=false",
-    "postinstall": "npm rebuild"
+    "build": "npm install --production=false"
   },
   "keywords": [],
   "author": "",
@@ -26,9 +25,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
-  },
-  "engines": {
-    "node": ">=20.x",
-    "npm": ">=10.x"
   }
 }
