@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const logAction = require("../utils/auditLogger");
 
 const router = express.Router();
 
@@ -20,12 +21,13 @@ router.post("/signup", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role,
+      role: role || "PATIENT",
     });
 
     return res.status(201).json({ message: "Account created successfully!" });
 
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ message: "Server error", error: err.message });
   }
 });
@@ -34,38 +36,41 @@ router.post("/login", async (req, res) => {
     try {
       const { email, password } = req.body;
   
-      const user = await User.findOne({ email });
-      if (!user)
-        return res.status(400).json({ message: "User not found" });
-  
-      const match = await bcrypt.compare(password, user.password);
-      if (!match)
-        return res.status(401).json({ message: "Invalid password" });
-  
-      const token = jwt.sign(
-        {
-          id: user._id,
-          email: user.email,
-          role: user.role,
-        },
-        process.env.SECRET_KEY,
-        { expiresIn: "1d" }
-      );
-  
-      return res.status(200).json({
-        message: "Login successful",
-        token,
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        },
-      });
-  
-    } catch (err) {
-      return res.status(500).json({ message: "Server error" });
-    }
-  });  
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(400).json({ message: "User not found" });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match)
+      return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.SECRET_KEY || "secret",
+      { expiresIn: "1d" }
+    );
+
+    await logAction(user._id, "LOGIN", "User logged in");
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});  
 
 module.exports = router;

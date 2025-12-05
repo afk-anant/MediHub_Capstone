@@ -42,7 +42,7 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API}/auth/Signup`, {
+      const response = await fetch(`${API}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -213,8 +213,8 @@ export default function Signup() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Already have an account?{' '}
-              <button 
-                onClick={() => navigate('/login')} 
+              <button
+                onClick={() => navigate('/login')}
                 className="text-blue-600 hover:text-blue-700 font-semibold cursor-pointer"
               >
                 Sign In
